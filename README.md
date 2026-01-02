@@ -1,54 +1,32 @@
-**This is the template README. Please update this with project specific content.**
 
 # phone-number-insights-acceptance-tests
 
-<SERVICE_NAME> API tests.
+This repository contains api acceptance tests for the Phone Number Insights service built using the [api-test-runner](https://github.com/hmrc/api-test-runner) library.
 
-## Pre-requisites
+## Running the tests
 
-### Services
+Prior to executing the tests ensure you have:
 
-Start Mongo Docker container as follows:
+- Installed/configured [sm2 (service manager 2)](https://github.com/hmrc/sm2).
+- Postgres DB installed locally or running in Docker.
 
-```bash
-docker run --rm -d -p 27017:27017 --name mongo percona/percona-server-mongodb:6.0
-```
+### Start the local services
 
-Start `<SERVICE_MANAGER_PROFILE>` services as follows:
+If you don't have mongodb installed locally you can run it in docker using the following commands:
 
-```bash
-sm2 --start <SERVICE_MANAGER_PROFILE>
-```
+    docker run --rm -d -p 27017:27017 --name mongo percona/percona-server-mongodb:7.0
 
-## Tests
+If you don't have postgres installed locally you can run it in docker using the following command
 
-Run tests as follows:
+    docker run -d --rm --name postgresql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:10.14
 
-* Argument `<environment>` must be `local`, `dev`, `qa` or `staging`.
+Start the dependent services by running the `./start_services.sh` script.
 
-```bash
-./run-tests.sh <environment>
-```
+### Running specs
 
-## Scalafmt
+Execute the `run_tests.sh` script:
 
-Check all project files are formatted as expected as follows:
-
-```bash
-sbt scalafmtCheckAll scalafmtCheck
-```
-
-Format `*.sbt` and `project/*.scala` files as follows:
-
-```bash
-sbt scalafmtSbt
-```
-
-Format all project files as follows:
-
-```bash
-sbt scalafmtAll
-```
+`./run_tests.sh`
 
 ## License
 
