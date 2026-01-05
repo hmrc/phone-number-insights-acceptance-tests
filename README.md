@@ -14,11 +14,15 @@ Prior to executing the tests ensure you have:
 
 If you don't have mongodb installed locally you can run it in docker using the following commands:
 
+```bash
     docker run --rm -d -p 27017:27017 --name mongo percona/percona-server-mongodb:7.0
+```
 
 If you don't have postgres installed locally you can run it in docker using the following command
 
-    docker run -d --rm --name postgresql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:10.14
+```bash
+    docker run -d --rm --name postgresql -e POSTGRES_DB=phonenumberinsights -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:latest
+```
 
 Start the dependent services by running the `./start_services.sh` script.
 
