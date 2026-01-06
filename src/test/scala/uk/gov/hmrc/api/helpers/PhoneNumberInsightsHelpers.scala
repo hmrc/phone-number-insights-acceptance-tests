@@ -69,9 +69,11 @@ class PhoneNumberInsightsHelpers extends BaseSpec with HttpClientHelper {
       get(testOnlyEndpoint, headers: _*),
       10.seconds
     )
-    val body = if (response.status == 200 && response.body.trim.nonEmpty) response.body else "{}"
-    val json = Json.parse(body)
-    (json \\ "phoneNumbersOnWatchlistEntries").asOpt[Seq[String]].getOrElse(Seq.empty)
+    val body     = if (response.status == 200 && response.body.trim.nonEmpty) response.body else "{}"
+    val json     = Json.parse(body)
+    (json \\ "phoneNumbersOnWatchlistEntries").headOption
+      .flatMap(_.asOpt[Seq[String]])
+      .getOrElse(Seq.empty)
   }
 
   def isPhoneNumberOnWatchlist(phoneNumber: String): Boolean =
