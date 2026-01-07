@@ -11,7 +11,7 @@ sm2 --start PHONE_NUMBER_INSIGHTS_PROXY PHONE_NUMBER_INSIGHTS PHONE_NUMBER_GATEW
         ],
         "PHONE_NUMBER_INSIGHTS": [
             "-J-Dapplication.router=testOnlyDoNotUseInAppConf.Routes",
-            "-J-Dmicroservice.phone-number-insights.database.dbName=postgres:postgres",
+            "-J-Ddb.phonenumberinsights.url=jdbc:postgresql://localhost:5432/",
             "-J-Dauditing.enabled=false"
         ],
         "CIP_RISK": [
