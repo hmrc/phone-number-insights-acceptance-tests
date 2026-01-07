@@ -1,0 +1,19 @@
+{
+  "add": [
+    {
+      "reason": "test only endpoint is not a production endpoint",
+      "url": "http://localhost:6085/phone-number-insights-proxy/test-only/watchlist/data/delete",
+      "ruleId": 10105
+    },
+    {
+      "reason": "test only endpoint is not a production endpoint",
+      "url": "http://localhost:6085/phone-number-insights-proxy/test-only/watchlist/data",
+      "ruleId": 10105
+    },
+    {
+      "reason": "test only endpoint is not a production endpoint",
+      "url": "http://localhost:6085/phone-number-insights-proxy/test-only/watchlist/data/create",
+      "ruleId": 10105
+    }
+  ]
+}
