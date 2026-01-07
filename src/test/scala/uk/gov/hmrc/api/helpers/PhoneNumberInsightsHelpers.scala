@@ -56,7 +56,7 @@ class PhoneNumberInsightsHelpers extends BaseSpec with HttpClientHelper {
 
     val createPhoneNumberInsightsTestOnlyData: StandaloneWSResponse =
       Await.result(
-        post(testOnlyEndpointCreateData, request, headers: _*),
+        post(testOnlyEndpointCreateData, request),
         20.seconds
       )
     val responseBody                                                = createPhoneNumberInsightsTestOnlyData.body
@@ -66,7 +66,7 @@ class PhoneNumberInsightsHelpers extends BaseSpec with HttpClientHelper {
 
   def getWatchlistPhoneNumbers: Seq[String] = {
     val response = Await.result(
-      get(testOnlyEndpoint, headers: _*),
+      get(testOnlyEndpoint),
       10.seconds
     )
     val body     = if (response.status == 200 && response.body.trim.nonEmpty) response.body else "{}"
