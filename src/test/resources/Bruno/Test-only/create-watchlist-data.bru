@@ -1,0 +1,32 @@
+meta {
+  name: watchlist data
+  type: http
+}
+
+post {
+  url: http://localhost:6085/phone-number-insights-proxy/test-only/watchlist/data/create
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: phone-number-insights-acceptance-tests
+  X-Correlation-ID: acceptance-tests
+}
+
+body:json {
+  {
+    "generatedEntries":{
+      "numberOfEntries": 5
+     },
+    "manualEntries":{
+      "phoneNumbers":[
+        "44798761728",
+        "447928394728",
+        "447927384756",
+        "07783947887"
+      ]
+     }
+  }
+}

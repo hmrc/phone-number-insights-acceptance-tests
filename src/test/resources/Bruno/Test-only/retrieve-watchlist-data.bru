@@ -1,0 +1,20 @@
+meta {
+  name: watchlist data
+  type: http
+}
+
+get {
+  url: http://localhost:6085/phone-number-insights-proxy/test-only/watchlist/data/
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: phone-number-insights-acceptance-tests
+  X-Correlation-ID: acceptance-tests
+}
+
+body:json {
+  {}
+}
