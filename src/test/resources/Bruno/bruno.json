@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "name": "Phone Number Insights",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "proxy": {
+    "enabled": "global",
+    "protocol": "http",
+    "hostname": "localhost",
+    "port": 8080,
+    "auth": {
+      "enabled": false,
+      "username": "",
+      "password": ""
+    },
+    "bypassProxy": ""
+  }
+}

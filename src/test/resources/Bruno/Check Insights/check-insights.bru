@@ -1,0 +1,25 @@
+meta {
+  name: check insights
+  type: http
+}
+
+post {
+  url: http://localhost:6086/phone-number-insights/check/insights
+  body: json
+  auth: basic
+}
+
+headers {
+  X-Correlation-ID: acceptance-tests
+}
+
+body:json {
+  {
+      "phoneNumber": "44798761728"
+  }
+}
+
+auth:basic {
+  username: phone-number-insights
+  password: local-test-token
+}
