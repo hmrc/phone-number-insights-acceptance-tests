@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "local-api-testing",
+  "name": "Phone Number Insights",
   "type": "collection",
   "ignore": [
     "node_modules",
