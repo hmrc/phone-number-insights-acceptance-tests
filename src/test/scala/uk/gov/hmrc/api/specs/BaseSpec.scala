@@ -35,6 +35,9 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
   val testOnlyEndpointCounts     = s"$testOnlyEndpoint/counts"
   val checkInsightsEndpoint      = s"$baseUrl/check/insights"
 
+  private val validAuthHeader: (String, String) =
+    ("Authorization", "Basic cGhvbmUtbnVtYmVyLWluc2lnaHRzOmxvY2FsLXRlc3QtdG9rZW4")
+
   def createWatchlistData(numberOfGeneratedPhoneNumbers: Int, manualPhoneNumbers: String): Unit = {
     val request =
       s"""{
@@ -116,7 +119,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
   def postInvalidPayloadRequest(payload: String): StandaloneWSResponse =
     Await.result(
       mkRequest(checkInsightsEndpoint)
-        .withHttpHeaders(headers: _*)
+        .withHttpHeaders(headers :+ validAuthHeader: _*)
         .post(payload),
       10.seconds
     )

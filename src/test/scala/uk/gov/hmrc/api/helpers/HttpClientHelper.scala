@@ -32,7 +32,6 @@ trait HttpClientHelper extends HttpClient with Logging {
 
   def headers: Seq[(String, String)] =
     Seq(
-      "Authorization"    -> "Basic cGhvbmUtbnVtYmVyLWluc2lnaHRzOmxvY2FsLXRlc3QtdG9rZW4",
       "Content-Type"     -> "application/json",
       "User-Agent"       -> "phone-number-insights-acceptance-tests",
       "X-Correlation-ID" -> "acceptance-tests"
