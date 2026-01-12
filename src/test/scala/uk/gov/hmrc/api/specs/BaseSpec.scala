@@ -32,16 +32,17 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
   val testOnlyEndpoint           = s"$testOnlyBaseUrl/test-only/watchlist/data"
   val testOnlyEndpointDeleteData = s"$testOnlyEndpoint/delete"
   val testOnlyEndpointCreateData = s"$testOnlyEndpoint/create"
+  val testOnlyEndpointCounts     = s"$testOnlyEndpoint/counts"
   val checkInsightsEndpoint      = s"$baseUrl/check/insights"
 
-  def createWatchlistData(numberOfGeneratedPhoneNumbers: Int, manualPhoneNumber: String): Unit = {
+  def createWatchlistData(numberOfGeneratedPhoneNumbers: Int, manualPhoneNumbers: String): Unit = {
     val request =
       s"""{
          |  "generatedEntries":{
          |    "numberOfEntries": $numberOfGeneratedPhoneNumbers
          |   },
          |  "manualEntries":{
-         |    "phoneNumbers": ["$manualPhoneNumber"]
+         |    "phoneNumbers": ["$manualPhoneNumbers"]
          |   }
          |}""".stripMargin
 
