@@ -24,7 +24,13 @@ If you don't have postgres installed locally you can run it in docker using the 
     docker run -d --rm --name postgresql -e POSTGRES_DB=phonenumberinsights -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:latest
 ```
 
-Start the dependent services by running the `./start_services.sh` script.
+### Starting dependent services
+
+The following command will start all the relevant services via sm2 that are required to run the acceptance tests:
+
+Execute the `./start_services.sh` script:
+
+`./start_services.sh`
 
 ### Running specs
 

@@ -4,22 +4,18 @@ meta {
 }
 
 post {
-  url: http://localhost:6086/phone-number-insights/check/insights
+  url: http://localhost:9026/phone-number-gateway/check/insights
   body: json
-  auth: basic
+  auth: none
 }
 
 headers {
   X-Correlation-ID: acceptance-tests
+  User-Agent: phone-number-insights-acceptance-tests
 }
 
 body:json {
   {
       "phoneNumber": "44798761728"
   }
-}
-
-auth:basic {
-  username: phone-number-insights
-  password: local-test-token
 }

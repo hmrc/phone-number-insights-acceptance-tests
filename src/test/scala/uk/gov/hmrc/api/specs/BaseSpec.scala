@@ -20,7 +20,6 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{Assertion, GivenWhenThen}
 import play.api.libs.json.Json
-import play.api.libs.ws.DefaultBodyWritables.writeableOf_String
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.helpers.HttpClientHelper
 
@@ -34,9 +33,6 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
   val testOnlyEndpointCreateData = s"$testOnlyEndpoint/create"
   val testOnlyEndpointCounts     = s"$testOnlyEndpoint/counts"
   val checkInsightsEndpoint      = s"$baseUrl/check/insights"
-
-  private val validAuthHeader: (String, String) =
-    ("Authorization", "Basic cGhvbmUtbnVtYmVyLWluc2lnaHRzOmxvY2FsLXRlc3QtdG9rZW4")
 
   def createWatchlistData(numberOfGeneratedPhoneNumbers: Int, manualPhoneNumbers: String): Unit = {
     val request =
@@ -96,33 +92,20 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
 
     val response: StandaloneWSResponse =
       Await.result(
-        postWithAuth(checkInsightsEndpoint, request),
+        post(checkInsightsEndpoint, request),
         10.seconds
       )
     response
   }
 
-  def postInvalidAuthRequest(phoneNumber: String): StandaloneWSResponse = {
-    val request =
-      s"""{
-         |"phoneNumber": "$phoneNumber"
-         |}""".stripMargin
-
-    val response: StandaloneWSResponse =
-      Await.result(
-        postWithInvalidAuth(checkInsightsEndpoint, request),
-        10.seconds
-      )
-    response
-  }
-
-  def postInvalidPayloadRequest(payload: String): StandaloneWSResponse =
-    Await.result(
-      mkRequest(checkInsightsEndpoint)
-        .withHttpHeaders(headers :+ validAuthHeader: _*)
-        .post(payload),
+  def postInvalidPayloadRequest(payload: String): StandaloneWSResponse = {
+    val invalidPayload = payload
+    val response       = Await.result(
+      post(checkInsightsEndpoint, invalidPayload),
       10.seconds
     )
+    response
+  }
 
   def assertPhoneNumberIsOnWatchlist(phoneNumber: String): Unit = {
     val response = postCheckInsightsRequest(phoneNumber)
