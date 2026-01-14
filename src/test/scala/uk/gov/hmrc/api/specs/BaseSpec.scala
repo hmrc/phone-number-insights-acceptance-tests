@@ -34,6 +34,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
   val testOnlyEndpointCreateData = s"$testOnlyEndpoint/create"
   val testOnlyEndpointCounts     = s"$testOnlyEndpoint/counts"
   val checkInsightsEndpoint      = s"$baseUrl/check/insights"
+  val invalidAuthEndpoint        = s"$phoneNumberInsightsUrl/check/insights"
 
   private val validAuthHeader: (String, String) =
     ("Authorization", "Basic cGhvbmUtbnVtYmVyLWluc2lnaHRzOmxvY2FsLXRlc3QtdG9rZW4")
@@ -96,7 +97,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
 
     val response: StandaloneWSResponse =
       Await.result(
-        postWithAuth(checkInsightsEndpoint, request),
+        post(checkInsightsEndpoint, request),
         10.seconds
       )
     response
@@ -110,7 +111,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
 
     val response: StandaloneWSResponse =
       Await.result(
-        postWithInvalidAuth(checkInsightsEndpoint, request),
+        postWithInvalidAuth(invalidAuthEndpoint, request),
         10.seconds
       )
     response

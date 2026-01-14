@@ -4,13 +4,14 @@ meta {
 }
 
 post {
-  url: http://localhost:6086/phone-number-insights/check/insights
+  url: http://localhost:9026/phone-number-gateway/check/insights
   body: json
   auth: basic
 }
 
 headers {
   X-Correlation-ID: acceptance-tests
+  User-Agent: phone-number-insights-acceptance-tests
 }
 
 body:json {
