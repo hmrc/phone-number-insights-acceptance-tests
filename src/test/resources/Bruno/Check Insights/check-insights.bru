@@ -6,7 +6,7 @@ meta {
 post {
   url: http://localhost:9026/phone-number-gateway/check/insights
   body: json
-  auth: basic
+  auth: none
 }
 
 headers {
@@ -18,9 +18,4 @@ body:json {
   {
       "phoneNumber": "44798761728"
   }
-}
-
-auth:basic {
-  username: phone-number-insights
-  password: local-test-token
 }

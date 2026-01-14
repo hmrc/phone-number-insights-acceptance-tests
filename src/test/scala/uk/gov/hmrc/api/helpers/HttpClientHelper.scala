@@ -27,9 +27,8 @@ import scala.concurrent.Future
 
 trait HttpClientHelper extends HttpClient with Logging {
 
-  val baseUrl: String                = TestEnvironment.url("phone-number-gateway")
-  val testOnlyBaseUrl: String        = TestEnvironment.url("phone-number-insights-proxy")
-  val phoneNumberInsightsUrl: String = TestEnvironment.url("phone-number-insights")
+  val baseUrl: String         = TestEnvironment.url("phone-number-gateway")
+  val testOnlyBaseUrl: String = TestEnvironment.url("phone-number-insights-proxy")
 
   def headers: Seq[(String, String)] =
     Seq(
@@ -60,12 +59,6 @@ trait HttpClientHelper extends HttpClient with Logging {
       .withHttpHeaders(allHeaders: _*)
       .post(Json.parse(body))
   }
-
-  def postWithInvalidAuth(url: String, body: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    mkRequest(url)
-      .withHttpHeaders(headers: _*)
-      .withAuth("invalid-user", "invalid-password", play.api.libs.ws.WSAuthScheme.BASIC)
-      .post(Json.parse(body))
 
   def invalidPostRequest(url: String, body: String, headers: (String, String)*): Future[StandaloneWSResponse] = {
     val allHeaders = this.headers ++ headers
