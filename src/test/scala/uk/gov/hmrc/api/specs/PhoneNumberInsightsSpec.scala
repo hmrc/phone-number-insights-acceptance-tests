@@ -20,46 +20,57 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 class PhoneNumberInsightsSpec extends BaseSpec with BeforeAndAfterEach with BeforeAndAfterAll {
 
-  val watchlistPhoneNumber = "07700900001"
-  val safePhoneNumber      = "07700900002"
+  val riskyPhoneNumber = "07700900001"
+  val safePhoneNumber  = "07700900002"
 
   val invalidPayload          = "{}"
   val invalidInsightsEndpoint = s"$baseUrl/check/invalid-endpoint"
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
     clearWatchlistData()
+    clearGraphData()
+  }
 
   override def afterEach(): Unit = {
     clearWatchlistData()
+    clearGraphData()
     super.afterAll()
   }
 
-  Feature("[PNI-1]- Phone Number Insights - Check if a phone number exists/does not exist on the watchlist") {
-    Scenario("[PNI.1.1] - Phone number exists on the watchlist") {
-      Given("the watchlist is empty")
+  Feature("[PNI-1]- Phone Number Insights - Check if a phone number exists/does not exist") {
+    Scenario("[PNI.1.1] - Phone number exists on the watchlist & graph database") {
+      Given("the watchlist & graph database is empty")
       assert(getWatchlistData.isEmpty)
+      assert(getGraphData.isEmpty)
 
-      When(s"I add the phone number '$watchlistPhoneNumber' to the watchlist")
-      createWatchlistData(0, watchlistPhoneNumber)
+      When(s"I add the phone number '$riskyPhoneNumber' to the watchlist & graph database")
+      createWatchlistData(0, riskyPhoneNumber)
+      createGraphData(1000, riskyPhoneNumber)
 
       And("I send a POST request to the check/insights endpoint")
-      postCheckInsightsRequest(watchlistPhoneNumber)
+      postCheckInsightsRequest(riskyPhoneNumber)
 
-      Then("the response should indicate that the number exists on the watchlist and the payload is correct")
-      assertPhoneNumberIsOnWatchlist(watchlistPhoneNumber)
+      Then(
+        "the response should indicate that the number exists on the watchlist & graph database & the payload is correct"
+      )
+      validateRiskyNumberPayload(riskyPhoneNumber)
     }
-    Scenario("[PNI.1.2] - Phone number does not exist on the watchlist") {
-      Given("the watchlist is empty")
+    Scenario("[PNI.1.2] - Phone number does not exist on the watchlist & graph database") {
+      Given("the watchlist & graph database is empty")
       assert(getWatchlistData.isEmpty)
+      assert(getGraphData.isEmpty)
 
-      When(s"I add the phone number '$watchlistPhoneNumber' to the watchlist")
-      createWatchlistData(0, watchlistPhoneNumber)
+      When(s"I add the phone number '$riskyPhoneNumber' to the watchlist & graph database")
+      createWatchlistData(0, riskyPhoneNumber)
+      createGraphData(1000, riskyPhoneNumber)
 
       And("I send a POST request to the check/insights endpoint")
       postCheckInsightsRequest(safePhoneNumber)
 
-      Then(s"the response should indicate that the number does not exist on the watchlist and the payload is correct")
-      assertPhoneNumberIsNotOnWatchlist(safePhoneNumber)
+      Then(
+        s"the response should indicate that the number doesn't exist on the watchlist & graph database & the payload is correct"
+      )
+      validateSafeNumberPayload(safePhoneNumber)
     }
   }
 

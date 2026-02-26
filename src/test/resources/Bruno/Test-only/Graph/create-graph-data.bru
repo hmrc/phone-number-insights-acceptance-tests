@@ -1,0 +1,35 @@
+meta {
+  name: graph data
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:6085/test-only/cip-risk/str/vertex-data
+  body: json
+  auth: inherit
+}
+
+headers {
+  User-Agent: phone-number-insights-acceptance-tests
+  X-Correlation-ID: acceptance-tests
+}
+
+body:json {
+  {
+    "randomEntriesToGenerate": 100000,
+    "batchInsertSize": 1000,
+    "vertexRecords": [{
+      "vertexId": 1,
+      "attributeId": "07700900001",
+      "data": "{}",
+      "vertexType": "phone_number",
+      "hopsToClosestRisky": 1
+    }]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
