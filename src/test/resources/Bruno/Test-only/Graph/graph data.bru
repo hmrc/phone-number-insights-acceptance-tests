@@ -1,0 +1,16 @@
+meta {
+  name: graph data
+  type: http
+  seq: 4
+}
+
+delete {
+  url: http://localhost:6085/test-only/cip-risk/str/vertex-data
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

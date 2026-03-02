@@ -1,0 +1,41 @@
+meta {
+  name: graph data
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:6085/test-only/cip-risk/str/vertex-data?limit=10&offset=5&vertexType=phone_number
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 10
+  offset: 5
+  vertexType: phone_number
+}
+
+headers {
+  User-Agent: phone-number-insights-acceptance-tests
+  X-Correlation-ID: acceptance-tests
+}
+
+body:json {
+  {
+    "randomEntriesToGenerate": 100000,
+    "batchInsertSize": 1000,
+    "vertexRecords": [{
+      "vertexId": 1,
+      "attributeId": "AA123456C",
+      "data": "{}",
+      "vertexType": "nino",
+      "hopsToClosestRisky": 1
+    }]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
