@@ -21,7 +21,7 @@ If you don't have mongodb installed locally you can run it in docker using the f
 If you don't have postgres installed locally you can run it in docker using the following command
 
 ```bash
-    docker run -d --rm --name postgresql -e POSTGRES_DB=phonenumberinsights -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:latest
+    docker run -d --rm --name postgresql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:latest
 ```
 
 ### Starting dependent services
