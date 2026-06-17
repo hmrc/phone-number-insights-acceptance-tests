@@ -1,0 +1,31 @@
+meta {
+  name: Phone Number occurrence data
+  type: http
+}
+
+post {
+  url: http://localhost:6086/phone-number-insights/test-only/occurrence-logs/data/create
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: phone-number-insights-acceptance-tests
+  X-Correlation-ID: acceptance-tests
+}
+body:json {
+  {
+    "generatedEntries": {
+      "numberOfPhoneNumbers": 3,
+      "numberOfAttributeGroupsPerPhoneNumber": 4
+    },
+    "manualEntries": {
+      "phoneNumbers" : [
+        "07791000000",
+        "07792000000"
+      ],
+      "numberOfAttributeGroupsPerPhoneNumber": 2
+    }
+  }
+}
