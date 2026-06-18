@@ -29,23 +29,27 @@ class PhoneNumberInsightsSpec extends BaseSpec with BeforeAndAfterEach with Befo
   override def beforeEach(): Unit = {
     clearWatchlistData()
     clearGraphData()
+    clearCountsData()
   }
 
   override def afterEach(): Unit = {
     clearWatchlistData()
     clearGraphData()
+    clearCountsData()
     super.afterAll()
   }
 
   Feature("[PNI-1]- Phone Number Insights - Check if a phone number exists/does not exist") {
-    Scenario("[PNI.1.1] - Phone number exists on the watchlist & graph database") {
+    Scenario("[PNI.1.1] - Phone number exists on the watchlist, graph database and counts database") {
       Given("the watchlist & graph database is empty")
       assert(getWatchlistData.isEmpty)
       assert(getGraphData.isEmpty)
+      assert(getCounts == 0)
 
-      When(s"I add the phone number '$riskyPhoneNumber' to the watchlist & graph database")
+      When(s"I add the phone number '$riskyPhoneNumber' to the watchlist, graph database and counts database")
       createWatchlistData(0, riskyPhoneNumber)
       createGraphData(1000, riskyPhoneNumber)
+      createCountData(2, riskyPhoneNumber)
 
       And("I send a POST request to the check/insights endpoint")
       postCheckInsightsRequest(riskyPhoneNumber)
