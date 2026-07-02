@@ -31,6 +31,7 @@ trait HttpClientHelper extends HttpClient with Logging {
   val testOnlyBaseUrl: String   = TestEnvironment.url("phone-number-insights-proxy")
   val graphDatabaseUrl: String  = TestEnvironment.url("graph-data-url")
   val countsDatabaseUrl: String = TestEnvironment.url("phone-number-insights")
+  val cipRiskUrl: String        = TestEnvironment.url("cip-risk")
 
   def headers: Seq[(String, String)] =
     Seq(

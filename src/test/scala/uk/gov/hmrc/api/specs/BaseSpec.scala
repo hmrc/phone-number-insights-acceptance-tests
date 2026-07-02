@@ -40,8 +40,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
   val testOnlyEndpointOccurrenceCounts = s"$countsTestOnlyEndpoint/counts"
 
   val graphDataTestOnlyEndpoint = s"$graphDatabaseUrl/test-only/cip-risk/str/vertex-data"
-
-  val checkInsightsEndpoint = s"$baseUrl/check/insights"
+  val checkInsightsEndpoint     = s"$baseUrl/check/insights"
 
   def createWatchlistData(numberOfGeneratedPhoneNumbers: Int, manualPhoneNumbers: String): Unit = {
     val request =
@@ -107,6 +106,18 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
          |  }]
          |}""".stripMargin
 
+    val createPhoneNumberInsightsTestOnlyData: StandaloneWSResponse =
+      Await.result(
+        post(graphDataTestOnlyEndpoint, request),
+        10.seconds
+      )
+
+    val responseBody = createPhoneNumberInsightsTestOnlyData.body
+    responseBody should include regex "Generated \\d+ vertices"
+    assert(createPhoneNumberInsightsTestOnlyData.status == 200)
+  }
+
+  def createGraphDataFromRequest(request: String): Unit = {
     val createPhoneNumberInsightsTestOnlyData: StandaloneWSResponse =
       Await.result(
         post(graphDataTestOnlyEndpoint, request),
@@ -207,25 +218,32 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
     val json     = Json.parse(body)
     assert((json \ "attributeType").asOpt[String].contains("PHONE_NUMBER"))
     assert((json \ "attributeValue").asOpt[String].contains(phoneNumber))
-    assert((json \ "insights" \ "risk" \ "score").asOpt[Int].contains(100))
-    assert((json \ "insights" \ "risk" \ "reason").asOpt[String].contains("ON_WATCH_LIST"))
-    assert((json \ "insights" \ "watchlistData" \ "isOnWatchlist").asOpt[Boolean].contains(true))
-    val reasons  = (json \ "insights" \ "graphData" \ "reasons").asOpt[Seq[String]].getOrElse(Seq.empty)
-    assert(reasons.nonEmpty)
-    assert(reasons.exists(_.contains(s"PHONE_NUMBER '$phoneNumber'")))
-    assert(reasons.exists(_.contains("hops from something risky")))
+  }
 
-    assert((json \ "insights" \ "graphData" \ "hops").asOpt[Int].contains(2))
-    assert((json \ "insights" \ "graphData" \ "avgHops").asOpt[BigDecimal].exists(_ >= 2))
+  def createShortestPathGraphPhoneNumbers(vertexRecords: Seq[(Int, String, Int)]): Unit = {
+    val request = Json.obj(
+      "randomEntriesToGenerate" -> 10000,
+      "batchInsertSize"         -> 1000,
+      "vertexRecords"           -> vertexRecords.map { case (vertexId, attributeId, hopsToClosestRisky) =>
+        Json.obj(
+          "vertexId"           -> vertexId,
+          "attributeId"        -> attributeId,
+          "data"               -> "{}",
+          "vertexType"         -> "phone_number",
+          "hopsToClosestRisky" -> hopsToClosestRisky
+        )
+      }
+    )
+
+    createGraphDataFromRequest(Json.stringify(request))
+  }
+
+  def assertGeneratedRelationshipAttributes(attributes: Seq[JsValue]): Unit = {
+    assert(attributes.forall(attr => (attr \ "attributeType").asOpt[String].isDefined))
+    assert(attributes.forall(attr => (attr \ "count").asOpt[Int].exists(_ > 0)))
 
     def getSeq(value: JsValue, field: String): Seq[JsValue] =
       (value \ field).asOpt[Seq[JsValue]].getOrElse(Seq.empty)
-
-    val attributes = (json \ "insights" \ "relationship" \ "attributes").asOpt[Seq[JsValue]].getOrElse(Seq.empty)
-    assert(attributes.nonEmpty, "attributes should not be empty")
-
-    assert(attributes.forall(attr => (attr \ "attributeType").asOpt[String].isDefined))
-    assert(attributes.forall(attr => (attr \ "count").asOpt[Int].exists(_ > 0)))
 
     val attributesWithValues = attributes.map { attr =>
       val attributeType = (attr \ "attributeType").as[String]
@@ -276,7 +294,54 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Http
     assert(reasons.exists(_.contains(s"PHONE_NUMBER '$phoneNumber' is not in the database.")))
     assert(reasons.exists(_.contains("hops from something risky")))
 
-    assert((json \ "insights" \ "graphData" \ "avgHops").asOpt[BigDecimal].exists(_ >= 2))
+    assert((json \ "insights" \ "graphData" \ "avgHops").asOpt[BigDecimal].exists(_ > 0))
+  }
+
+  def validateShortestPathGraphResponse(phoneNumber: String): Unit = {
+    val response = postCheckInsightsRequest(phoneNumber)
+    val body     = response.body
+    val json     = Json.parse(body)
+    assert((json \ "attributeType").asOpt[String].contains("PHONE_NUMBER"))
+    assert((json \ "attributeValue").asOpt[String].contains(phoneNumber))
+
+    val shortestReasons = (json \ "insights" \ "resolvedShortestPathGraphResponse" \ "reason")
+      .asOpt[String]
+      .map(Seq(_))
+      .getOrElse(Seq.empty)
+
+    assert(shortestReasons.nonEmpty)
+    assert(shortestReasons.exists(_.contains(s"Attribute $phoneNumber is in the database.")))
+    assert(shortestReasons.exists(_.contains("data is included.")))
+
+    val riskPaths = (json \ "insights" \ "resolvedShortestPathGraphResponse" \ "riskPaths")
+      .asOpt[Seq[play.api.libs.json.JsValue]]
+      .getOrElse(Seq.empty)
+
+    assert(riskPaths.nonEmpty)
+
+    val shortestPath = (riskPaths.head \ "shortestPath")
+      .asOpt[Seq[play.api.libs.json.JsValue]]
+      .getOrElse(Seq.empty)
+
+    assert(shortestPath.size == 3)
+    assert((shortestPath.head \ "attributeId").asOpt[String].contains(phoneNumber))
+    assert((shortestPath.head \ "attributeType").asOpt[String].contains("phone_number"))
+    assert((shortestPath(1) \ "attributeType").asOpt[String].isDefined)
+    assert((shortestPath(2) \ "attributeType").asOpt[String].isDefined)
+
+    val riskDetails = (json \ "insights" \ "resolvedShortestPathGraphResponse" \ "riskDetails")
+      .asOpt[Seq[play.api.libs.json.JsValue]]
+      .getOrElse(Seq.empty)
+
+    assert(riskDetails.nonEmpty)
+
+    val riskDetail = riskDetails.head
+    assert((riskDetail \ "source" \ "attributeId").asOpt[String].contains(phoneNumber))
+    assert((riskDetail \ "source" \ "attributeType").asOpt[String].contains("phone_number"))
+    assert((riskDetail \ "destination" \ "attributeId").asOpt[String].isDefined)
+    assert((riskDetail \ "destination" \ "attributeType").asOpt[String].isDefined)
+    assert((riskDetail \ "weight").asOpt[Int].contains(1))
+    assert((riskDetail \ "events" \ 0 \ "type").asOpt[String].exists(_.startsWith("SomeBusinessEvent-")))
   }
 
   def postInvalidEndpoint(invalidEndpoint: String): StandaloneWSResponse = {

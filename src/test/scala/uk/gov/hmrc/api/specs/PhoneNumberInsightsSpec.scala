@@ -20,8 +20,9 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 class PhoneNumberInsightsSpec extends BaseSpec with BeforeAndAfterEach with BeforeAndAfterAll {
 
-  val riskyPhoneNumber = "07700900001"
-  val safePhoneNumber  = "07700900002"
+  val riskyPhoneNumber     = "07700900001"
+  val safePhoneNumber      = "07700900002"
+  val graphOnlyPhoneNumber = "07700900003"
 
   val invalidPayload          = "{}"
   val invalidInsightsEndpoint = s"$baseUrl/check/invalid-endpoint"
@@ -50,7 +51,6 @@ class PhoneNumberInsightsSpec extends BaseSpec with BeforeAndAfterEach with Befo
       createWatchlistData(0, riskyPhoneNumber)
       createGraphData(1000, riskyPhoneNumber)
       createCountData(2, riskyPhoneNumber)
-
       And("I send a POST request to the check/insights endpoint")
       postCheckInsightsRequest(riskyPhoneNumber)
 
@@ -101,5 +101,24 @@ class PhoneNumberInsightsSpec extends BaseSpec with BeforeAndAfterEach with Befo
       assert(response.status == 404)
       assert(response.body.contains("URI not found"))
     }
+  }
+  Scenario("[PNI.2.3] - Phone number exists in graph data and returns a shortest path graph response") {
+    Given("the graph database is empty")
+    assert(getGraphData.isEmpty)
+
+    When(s"I add graph data for the phone number '$graphOnlyPhoneNumber'")
+    createShortestPathGraphPhoneNumbers(
+      Seq(
+        (1, riskyPhoneNumber, 0),
+        (2, safePhoneNumber, 1),
+        (3, graphOnlyPhoneNumber, 2)
+      )
+    )
+
+    And("I send a POST request to the check/insights endpoint")
+    postCheckInsightsRequest(graphOnlyPhoneNumber)
+
+    Then("the response should include the expected shortest path graph response")
+    validateShortestPathGraphResponse(graphOnlyPhoneNumber)
   }
 }
